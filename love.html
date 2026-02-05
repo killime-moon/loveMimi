@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Millie special quizz 💖</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(#ffb6c1, #ff69b4);
+        height: 100vh;
+        overflow: hidden;
+        color: white;
+    }
+
+    /* 🎀 GIF en haut */
+    .top-gif {
+        position: fixed;
+        top: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 320px;
+        max-width: 100%;
+        opacity: 0;
+        animation: fadeInGif 2s ease forwards;
+        z-index: -10;
+        pointer-events: none;
+    }
+
+    @keyframes fadeInGif {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    .screen {
+        position: absolute;
+        inset: 0;
+        padding: 10px;
+        margin-top: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.2s ease;
+    }
+
+    .screen.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        animation: fadeUp 1s ease;
+    }
+
+    p {
+        font-size: 1.1em;
+        animation: fadeUp 1.2s ease;
+    }
+
+    button {
+        width: 90%;
+        max-width: 350px;
+        padding: 15px;
+        margin: 10px auto;
+        font-size: 18px;
+        border: none;
+        border-radius: 30px;
+        background: #ff4d88;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+    #answers {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .final img {
+        width: 80%;
+        max-width: 300px;
+        margin-top: 20px;
+        border-radius: 25px;
+        animation: zoomFade 5s ease-in-out forwards;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes zoomFade {
+        0% { opacity: 0; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1.25); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 Sons -->
+<audio id="bgMusic" loop>
+    <source src="fon.mp3" type="audio/mpeg">
+</audio>
+<audio id="pop">
+    <source src="pop.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="finalSound">
+    <source src="win.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Start -->
+<div class="screen active" id="start">
+    <h1>💖 EL QUIZZOOO 💖</h1>
+    <p>- Killian Philippart seul femme de millie</p>
+    <button onclick="startQuiz()">Lancer</button>
+</div>
+<img 
+    src="jsp.gif" 
+    alt="Love Gif" 
+    class="top-gif"
+/>
+
+<!-- Quiz -->
+<div class="screen" id="quiz">
+    <h1 id="question"></h1>
+    <div id="answers"></div>
+</div>
+
+<!-- Suspense -->
+<div class="screen" id="suspense">
+    <h1>⏳ Suspens...</h1>
+    <p>La surprise arrive 💖</p>
+</div>
+
+<!-- Final -->
+<div class="screen final" id="final">
+    <h1>🎁 Surprise 🎁</h1>
+    <p>UNE PELUCHE DE RENARD (photo non contractuelle)</p>
+    <img src="cadeau.png" alt="Amour">
+</div>
+
+<script>
+const questions = [
+    "Quel est le nom de ma ville ?",
+    "Qu'a fait mon putain de furet ?",
+    "Quel est son nom ?",
+    "Qui est la GOAT ici ?",
+    "Ce que j’aime le plus chez toi ?",
+    "Quel est mon fruit préféré ?",
+    "Comment j'ai rencontré kuzo ?",
+    "Est ce que t'es belle ?",
+    "Quel serai mon date idéal ?",
+    "Veux tu passer la St Valentin avec moi ?"
+];
+
+const answers = [
+    ["Paris", "Clermont", "Aubière", "Nice"],
+    ["casser un verre", "casser un vase", "casser un pc à 3000€", "les trois"],
+    ["Yeonjun", "Lôka", "Connasse", "fezgZGFE4G"],
+    ["Kaoruko", "Columbina <3 (indice)", "Célia 🤮", "la soeur de kuzo"],
+    ["Ton sourire", "Ton regard", "Ton cœur", "Tout"],
+    ["L'orange", "La fraise", "Le citron", "Aucun"],
+    ["Sur valorant", "Sur discord", "Grace a Célia", "On s’en fout"],
+    ["oui", "oui", "oui", "C'est con t'as pas le choix"],
+    ["Restaurant", "Dans tes bras", "Au cinéma", "Jouer au UNO"],
+    ["Oui", "stp", "stp (je t'aime)", "stp (plus que l'autre fille de con)"]
+];
+
+let index = 0;
+
+const screens = {
+    start: document.getElementById("start"),
+    quiz: document.getElementById("quiz"),
+    suspense: document.getElementById("suspense"),
+    final: document.getElementById("final")
+};
+
+function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove("active"));
+    screens[name].classList.add("active");
+}
+
+function startQuiz() {
+    showScreen("quiz");
+    document.getElementById("bgMusic").play();
+    document.getElementById("pop").play();
+    showQuestion();
+}
+
+function showQuestion() {
+    document.getElementById("question").innerText = questions[index];
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+
+    answers[index].forEach(text => {
+        const btn = document.createElement("button");
+        btn.innerText = text;
+        btn.onclick = next;
+        answersDiv.appendChild(btn);
+    });
+}
+
+function next() {
+    index++;
+    document.getElementById("pop").play();
+    if (index < questions.length) {
+        
+        setTimeout(() =>{
+            showQuestion();
+        }, 500);
+    } else {
+        showScreen("suspense");
+        document.getElementById("finalSound").play();
+        setTimeout(() => {
+            showScreen("final");
+        }, 6000);
+    }
+}
+</script>
+
+</body>
+</html>
